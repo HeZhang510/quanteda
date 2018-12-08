@@ -155,6 +155,7 @@ Collate:
     'textstat-methods.R'
     'textstat_collocations.R'
     'textstat_dist_old.R'
+    'textstat_entropy.R'
     'textstat_frequency.R'
     'textstat_keyness.R'
     'textstat_lexdiv.R'
