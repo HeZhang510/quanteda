@@ -3,7 +3,7 @@ context("test textstat_entropy")
 
 test_that("textstat_entropy computation is correct", {
     
-    x <- dfm(c(
+    test <- dfm(c(
         d1 = "a a a b c d e f f",
         d2 = "b b b c c d e f",
         d3 = "a a d d d f"
@@ -26,5 +26,8 @@ test_that("textstat_entropy computation is correct", {
     
     expect_equal(textstat_entropy(test, method = 'minimax', unit = 'log2'),
                  apply(test, 2, entropy::entropy, method ='minimax', unit = "log2"))
+    
+    expect_equal(textstat_entropy(test, method = 'cs', unit = 'log2'),
+                 apply(test, 2, entropy::entropy, method ='CS', unit = "log2"))
     
 })

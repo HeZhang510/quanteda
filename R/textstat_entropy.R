@@ -6,7 +6,7 @@
 #' @param margin a character indicating on which margin to compress a dfm, either "documents" or "features"
 #' @param method a character defining the entropy measure to be calculated
 #' @param unit a character vector defining the unit in which entropy is measured. The default is "nats" (natural units). For computing entropy in "bits" set unit="log2".
-
+#' @export
 textstat_entropy <- function(x, selection = NULL, margin = c("documents", "features"),
                              method = c("ml", "mm", "jeffreys", "laplace", "sg", "minimax", "cs", "nsb", "shrink"),
                              unit = c("nat", "log", "log2", "log10")) {
@@ -17,7 +17,7 @@ textstat_entropy <- function(x, selection = NULL, margin = c("documents", "featu
 textstat_entropy.default <- function(x, selection = NULL, margin = c("documents", "features"),
                                     method = c("ml", "mm", "jeffreys", "laplace", "sg", "minimax", "cs", "nsb", "shrink"),
                                     unit = c("nat", "log", "log2", "log10")) {
-    stop(friendly_class_undefined_message(class(x), "textstat_lexdiv"))
+    stop(friendly_class_undefined_message(class(x), "textstat_entropy"))
 }
 
 #' @export
@@ -88,6 +88,24 @@ textstat_entropy.dfm <- function(x, selection = NULL, margin = c("documents", "f
         })
         entropy <- basic_entropy(t(adj_prop), base = base)
     }
+    
+    if (method == 'cs'){
+        entropy <- apply(t(x), 1, function(y) {
+            nonzero = y[y>0] #Subset non-zero entires
+            total = sum(nonzero) #Count total entries
+            prop = nonzero/total #Count proportion of non-zero entries
+            
+            f1 = sum(nonzero == 1) # singletons - nfeatures with only one appearance in corpus
+            if (f1 == total) f1 = total - 1
+            
+            C = 1 - f1/total # Estimate for sample coverage
+            pa = C * prop
+            la = (1-(1-pa)^total)
+            H = -sum(pa*log(pa, base= base)/la)
+        })
+    }
+    
+    
     return(entropy)
 }
 # Helper Function for Basic Entropy on a Transposed DFM
