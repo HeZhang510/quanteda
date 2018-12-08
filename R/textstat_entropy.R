@@ -1,6 +1,6 @@
-#' Calculate entropy
-#' Calculate entropy for a dfm or fcm object.
+#' Entropy computation between documents or features
 #' 
+#' Calculate entropy for a dfm or fcm object, for the documents or features margins.
 #' @param x an input \link{dfm} object
 #' @param selection a subset of \link{dfm} on which entropy is supposed to be computed
 #' @param margin a character indicating on which margin to compress a dfm, either "documents" or "features"

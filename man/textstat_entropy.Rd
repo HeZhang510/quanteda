@@ -2,8 +2,7 @@
 % Please edit documentation in R/textstat_entropy.R
 \name{textstat_entropy}
 \alias{textstat_entropy}
-\title{Calculate entropy
-Calculate entropy for a dfm or fcm object.}
+\title{Entropy computation between documents or features}
 \usage{
 textstat_entropy(x, selection = NULL, margin = c("documents",
   "features"), method = c("ml", "mm", "jeffreys", "laplace", "sg",
@@ -22,6 +21,5 @@ textstat_entropy(x, selection = NULL, margin = c("documents",
 \item{unit}{a character vector defining the unit in which entropy is measured. The default is "nats" (natural units). For computing entropy in "bits" set unit="log2".}
 }
 \description{
-Calculate entropy
-Calculate entropy for a dfm or fcm object.
+Calculate entropy for a dfm or fcm object, for the documents or features margins.
 }
