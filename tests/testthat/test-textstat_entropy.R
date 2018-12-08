@@ -6,7 +6,8 @@ test_that("textstat_entropy computation is correct", {
     test <- dfm(c(
         d1 = "a a a b c d e f f",
         d2 = "b b b c c d e f",
-        d3 = "a a d d d f"
+        d3 = "a a d d d f",
+        d4 = 'b h j k l'
     ))
     
     expect_equal(textstat_entropy(test, method = 'ml', unit = 'log2'),
@@ -29,5 +30,8 @@ test_that("textstat_entropy computation is correct", {
     
     expect_equal(textstat_entropy(test, method = 'cs', unit = 'log2'),
                  apply(test, 2, entropy::entropy, method ='CS', unit = "log2"))
+    
+    expect_equal(textstat_entropy(test, method = 'shrink', unit = 'log2'),
+                 apply(test, 2, entropy::entropy, method ='shrink', unit = "log2"))
     
 })

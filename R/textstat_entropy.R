@@ -91,20 +91,55 @@ textstat_entropy.dfm <- function(x, selection = NULL, margin = c("documents", "f
     
     if (method == 'cs'){
         entropy <- apply(t(x), 1, function(y) {
-            nonzero = y[y>0] #Subset non-zero entires
-            total = sum(nonzero) #Count total entries
-            prop = nonzero/total #Count proportion of non-zero entries
+            nonzero <- y[y>0] #Subset non-zero entires
+            total <- sum(nonzero) #Count total entries
+            prop <- nonzero/total #Count proportion of non-zero entries
             
-            f1 = sum(nonzero == 1) # singletons - nfeatures with only one appearance in corpus
-            if (f1 == total) f1 = total - 1
+            f1 <- sum(nonzero == 1) # singletons - nfeatures with only one appearance in corpus
+            if (f1 == total) f1 <- total - 1
             
-            C = 1 - f1/total # Estimate for sample coverage
-            pa = C * prop
-            la = (1-(1-pa)^total)
-            H = -sum(pa*log(pa, base= base)/la)
+            C <- 1 - f1/total # Estimate for Sample Coverage C
+            pa <- C * prop # This is equivalent to the Good-Turing-corrected Frequency Estimates
+            la <- (1-(1-pa)^total) # Denominator for the Horvitz-Thompson estimator
+            -sum(pa*log(pa, base= base)/la) # Chao-Shen estimator
         })
     }
     
+    if (method == 'shrink'){
+        shrinkage_target <- 1 / ndoc(test)
+        shrinkage_estimate <- apply(t(x), 1, function(y) {
+            total <- sum(y)
+            prop <- y/total # equivalent to MLE of feature probs
+            
+            if (total == 1 | total == 0) {
+                lambda = 1
+            }  else {
+                nom <- sum((prop * (1-prop)) / (total - 1) ) # estimator of variance of MLE
+                denom <- sum( (shrinkage_target - prop)^2 ) #misspecification
+                if (denom == 0) {
+                    lambda = 1
+                }
+                else {
+                    lambda = nom/denom
+                }
+            }
+            
+            # Check Over and Under Shrinkage
+            if (lambda > 1) { 
+                lambda = 1 
+            # truncate at 1 #warning("Overshrinkage") 
+            } 
+            if (lambda < 0) { 
+                lambda = 0 
+                # warning("Undershrinkage") 
+            }
+            
+            shrinkage_estimate <- (lambda * shrinkage_target) + ((1-lambda) * prop)
+        })
+        
+        entropy <- basic_entropy(t(shrinkage_estimate), base = base)
+        
+    }
     
     return(entropy)
 }
